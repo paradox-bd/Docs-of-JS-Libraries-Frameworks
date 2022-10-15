@@ -26,33 +26,33 @@
   ## All Documentations
 
   ### Docs of JavaScript
-- [JavaScript Using Method And Example](/JavaScript)
+- [JavaScript Using Method And Example](/Docs-of-JS-Libraries-Frameworks/JavaScript)
   ### Docs of ReactJs
-- [ReactJs Using Method And Example](/ReactJs)
+- [ReactJs Using Method And Example](/Docs-of-JS-Libraries-Frameworks/ReactJs)
   ### Docs of ReactRouter
-- [ReactRouter Using Method And Example](/ReactRouter)
+- [ReactRouter Using Method And Example](/Docs-of-JS-Libraries-Frameworks/ReactRouter)
   ### Docs of Firebase
-- [Firebase Using Method And Example](/Firebase)
+- [Firebase Using Method And Example](/Docs-of-JS-Libraries-Frameworks/Firebase)
   ### Docs of React Firebase Hooks
-- [Firebase Using Method And Example](/ReactFirebaseHooks)
+- [Firebase Using Method And Example](/Docs-of-JS-Libraries-Frameworks/ReactFirebaseHooks)
   ### Docs of Node Js
-- [NodeJs Using Method And Example](/NodeJs)
+- [NodeJs Using Method And Example](/Docs-of-JS-Libraries-Frameworks/NodeJs)
   ### Docs of Mongo DB
-- [MongoDB Using Method And Example](/MongoDB)
+- [MongoDB Using Method And Example](/Docs-of-JS-Libraries-Frameworks/MongoDB)
   ### Docs of DotEnv
-- [DotEnv Using Method And Example](/DotEnv)
+- [DotEnv Using Method And Example](/Docs-of-JS-Libraries-Frameworks/DotEnv)
   ### Docs of Express
-- [Express Using Method And Example](/Express)
+- [Express Using Method And Example](/Docs-of-JS-Libraries-Frameworks/Express)
   ### Docs of Json Web Token
-- [JsonWebToken Using Method And Example](/JsonWebToken)
+- [JsonWebToken Using Method And Example](/Docs-of-JS-Libraries-Frameworks/JsonWebToken)
   ### Docs of Heroku
-- [Heroku Using Method And Example](/Heroku)
+- [Heroku Using Method And Example](/Docs-of-JS-Libraries-Frameworks/Heroku)
   ### Docs of ReactNative
-- [ReactNative Using Method And Example](/ReactNative)
+- [ReactNative Using Method And Example](/Docs-of-JS-Libraries-Frameworks/ReactNative)
   ### Docs of Redux
-- [Redux Using Method And Example](/Redux)
+- [Redux Using Method And Example](/Docs-of-JS-Libraries-Frameworks/Redux)
   ### Docs of TypeScript
-- [TypeScript Using Method And Example](/TypeScript)
+- [TypeScript Using Method And Example](/Docs-of-JS-Libraries-Frameworks/TypeScript)
 
   ## Documentations End
 
