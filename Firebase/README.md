@@ -10,8 +10,10 @@ List of React:
 - [InitialSetup](#InitialSetup)
 - [GoogleSignIn](#GoogleSignIn)
 - [EmailPasswordAuth](#EmailPasswordAuth)
-- [Table](#Table)
-- [Table](#Table)
+- [PrivateRoute](#PrivateRoute)
+- [useNavigate](#useNavigate)
+- [Notes](#Notes)
+- [FirebaseInterviewQuestions](#FirebaseInterviewQuestions)
 - [Table](#Table)
 
 ### demo
@@ -155,6 +157,106 @@ demo code
 ```
 </details>
 
+### PrivateRoute
+<details>
+<summary>
+  <h3> Private Route-(Click Me)</h3>
+</summary>
+<br >
+	
+```js
+//step 1
+//Create 2 components
+i. PrivateRoute ii. PrivateRoute Children component (যেইটা PrivateRoute হবে। login বাদে ঐ route lock থাকবে)
+
+Example:
+// App.js
+{
+  path: "/orders",
+  element: (
+    <PrivateRoute>
+      <Orders />
+    </PrivateRoute>
+  ),
+},
+
+// PrivateRoute componets
+import React, { useContext } from "react";
+import { Navigate } from "react-router-dom";
+import { AuthContext } from "../contexts/UserContext";
+
+const PrivateRoute = ({ children }) => {
+  const { user, loading } = useContext(AuthContext);
+//loading যাতে page reload দেওয়ার পরে user ঐ page এ থাকে।
+  if(loading){
+    return <div>loading...</div>
+  }
+
+  if (user && user.uid) {
+    return children;
+  }
+  return <Navigate to='/login'></Navigate>;
+};
+
+export default PrivateRoute;
+
+//Orders componets
+import React from 'react';
+const Orders = () => {
+    return (
+        <div>
+            <h2>Orders</h2>
+        </div>
+    );
+};
+export default Orders;
+
+//  Another private Route (just set PrivateRoute inside)
+{
+  path: "/",
+  element: <PrivateRoute><Home /></PrivateRoute>
+},
+{
+  path: "/orders",
+  element: (
+    <PrivateRoute>
+      <Orders />
+    </PrivateRoute>
+  ),
+},
+
+
+```
+</details>
+
+
+### useNavigate
+<details>
+<summary>
+  <h3> useNavigate-(Click Me)</h3>
+</summary>
+<br >
+	
+```js
+//step 1:
+import { useNavigate } from "react-router-dom";
+const navigate = useNavigate();
+	
+//step 2: 
+// যখন user sign in করবে তখন user কে navigate করতে হবে
+signIn(email, password)
+.then((result) => {
+const user = result.user;
+console.log(user);
+form.reset();
+//step 3:
+// navigate user home page
+navigate("/home");
+})
+.catch((error) => console.error(error));
+
+```
+</details>
 
 
 ### Notes
@@ -182,7 +284,7 @@ demo code
 ### FirebaseInterviewQuestions
 <details>
 <summary>
-  <h3>React Router Interview Questions (Click Me)</h3>
+  <h3>Firebase Interview Questions (Click Me)</h3>
 </summary>
 <br >
  must be know every single part for interview https://roadmap.sh/react
