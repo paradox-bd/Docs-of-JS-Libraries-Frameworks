@@ -12,6 +12,9 @@ List of React:
 - [EmailPasswordAuth](#EmailPasswordAuth)
 - [PrivateRoute](#PrivateRoute)
 - [useNavigate](#useNavigate)
+- [AuthContext](#AuthContext)
+
+- [FireBaseHosting](#FireBaseHosting)
 - [Notes](#Notes)
 - [FirebaseInterviewQuestions](#FirebaseInterviewQuestions)
 - [Table](#Table)
@@ -19,13 +22,13 @@ List of React:
 ### demo
 <details>
 <summary>
-  <h3> Demo-(Click Me)</h3>
+  <h3>AuthContext-(Click Me)</h3>
 </summary>
 <br >
 	
 ```js
 
-demo code
+FireBaseHosting code
 
 ```
 </details>
@@ -254,6 +257,148 @@ form.reset();
 navigate("/home");
 })
 .catch((error) => console.error(error));
+
+
+<--- Advace Example () --->
+// step 1: (PrivateRoute)
+//Private.js (component)
+import React, { useContext } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { AuthContext } from "../context/UserContext";
+
+const PrivateRoute = ({ children }) => {
+ const { user, loading } = useContext(AuthContext);
+  const location = useLocation()
+// loading state যাতে user page reload এর পরে same page এ থাকে।
+  if(loading){
+    return <div>loading</div>
+  }
+  if (user && user.uid) {
+    return children;
+  }
+  return <Navigate to="/login" state={{from:location}} replace ></Navigate>;
+};
+
+export default PrivateRoute;
+
+//step 2: 
+//Login.js (component)
+import { useLocation, useNavigate } from "react-router-dom";
+const Login = () => {
+  //navigate after login
+  const navigate = useNavigate();
+  // call location
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+    //sign in user in firebase
+    signIn(email, password)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        form.reset();
+        //navigate
+        // navigate("/home");
+        navigate(from, {replace:true})
+      })
+      .catch((error) => console.error(error));
+  };
+  
+ return (
+	<div></div>
+ );
+};
+
+
+```
+</details>
+
+### AuthContext
+<details>
+<summary>
+  <h3>AuthContext-(Click Me)</h3>
+</summary>
+<br >
+	
+```js
+
+//step 1 create (UserContext) component
+//UserContext.js (component)
+import React, { createContext } from 'react';
+export const AuthContext = createContext();
+const UserContext = ({children}) => {
+//check user where use context 
+const user = {email: 'abc'};
+const authInfo = {user};
+    return (
+        <AuthContext.Provider value={authInfo}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
+export default UserContext;
+
+//step 2 (go index.js file then set UserContext)
+import UserContext from "./context/UserContext";
+<React.StrictMode>
+    <UserContext>
+      <App />
+    </UserContext>
+ </React.StrictMode>
+	
+//step 3 (access to UserContext in Header.js)
+//Header.js (component)
+import UserContext, { AuthContext } from "../../context/UserContext";
+const Header = () => {
+const user = useContext(AuthContext);
+return (
+	 <span>{user.email}</span>
+    )
+};
+
+export default Header;
+	
+<!-- Full Example -->
+
+	
+	
+
+```
+</details>
+
+
+
+
+
+
+
+### FireBaseHosting
+<details>
+<summary>
+  <h3>FireBase Hosting-(Click Me)</h3>
+</summary>
+<br >
+59-9 (bonus video) Host your react app to firebase
+	
+```js
+
+//Firebase Hosting
+// One time for each computer
+1. npm install -g firebase-tools
+2. firebase login
+
+//for each project one time
+3. firebase init
+4. Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys
+5. Use an existing project
+6. Select you project (ema-john-fa6f4 must be match firebase.google.com your project name)
+7.  (you just write build) What do you want to use as your public directory? (public) build 
+8. (you select y) Configure as a single-page app (rewrite all urls to /index.html)? Yes
+9. Configure as a single-page app (rewrite all urls to /index.html)? Yes
+
+// for every deploy
+10. npm run build
+11. firebase deploy
+
 
 ```
 </details>
