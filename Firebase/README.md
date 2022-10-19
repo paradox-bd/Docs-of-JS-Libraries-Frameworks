@@ -239,8 +239,15 @@ export default Orders;
   <h3> useNavigate-(Click Me)</h3>
 </summary>
 <br >
+Before Use:
+useNavigate er 2টা কাজ 
+1. Login / Sign Up এর পরে কোথায় যাবে।
+2. login না থাকা অবস্থাই কিছু route এ যেতে দেই না redirect করে Login Page আসে। 
+আবার login করলে same page নিয়ে যেতে হবে।	
 	
-```js
+```js	
+	
+// Simple Way (Login / Sign Up এর পরে কোথায় যাবে।)	
 //step 1:
 import { useNavigate } from "react-router-dom";
 const navigate = useNavigate();
@@ -260,6 +267,23 @@ navigate("/home");
 
 
 <--- Advace Example () --->
+Before use: and loading use করতে হবে।
+1. PrivateRoute Componet set 
+ return <Navigate to="/signin" state={{ from: location }} replace />
+2. Singin Componet set
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
+signInUser(email, password)
+	.then((result) => {
+	const user = result.user;
+	console.log(user);
+	navigate(from, {replace:true})
+})
+	
+<!-- Full Example -->
+	
 // step 1: (PrivateRoute)
 //Private.js (component)
 import React, { useContext } from "react";
@@ -276,17 +300,21 @@ const PrivateRoute = ({ children }) => {
   if (user && user.uid) {
     return children;
   }
+	
+//step 2 :
   return <Navigate to="/login" state={{from:location}} replace ></Navigate>;
 };
 
 export default PrivateRoute;
 
-//step 2: 
+
 //Login.js (component)
 import { useLocation, useNavigate } from "react-router-dom";
 const Login = () => {
   //navigate after login
   const navigate = useNavigate();
+	
+//step 3: 
   // call location
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -298,6 +326,8 @@ const Login = () => {
         form.reset();
         //navigate
         // navigate("/home");
+	
+	//step 4:
         navigate(from, {replace:true})
       })
       .catch((error) => console.error(error));
@@ -407,7 +437,7 @@ const UserContext = ({ children }) => {
       setLoading(false)
     });
 
-    return () => unSubscribe;
+    return () => unSubscribe();
   }, []);
 
   //send Data any where
