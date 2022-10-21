@@ -241,9 +241,12 @@ export default Orders;
 <br >
 Before Use:
 useNavigate er 2টা কাজ 
-1. Login / Sign Up এর পরে কোথায় যাবে।
-2. login না থাকা অবস্থাই কিছু route এ যেতে দেই না redirect করে Login Page আসে। 
-আবার login করলে same page নিয়ে যেতে হবে।	
+- Login / Sign Up এর পরে কোথায় যাবে।
+- login না থাকা অবস্থাই কিছু route এ যেতে দেই না redirect করে Login Page আসে। 
+আবার login করলে same page নিয়ে যেতে হবে।
+- only allow authenticated user to visit the route
+- 
+- Redirect user to the route they wanted to go before login
 	
 ```js	
 	
@@ -266,7 +269,7 @@ navigate("/home");
 .catch((error) => console.error(error));
 
 
-<--- Advace Example () --->
+<--- Advance Example () --->
 Before use: and loading use করতে হবে।
 1. PrivateRoute Componet set 
  return <Navigate to="/signin" state={{ from: location }} replace />
@@ -394,11 +397,13 @@ export default Header;
 //step 1 (create UserCompnet and export AuthContext)
 //UserCOntext.js (component)
 import {
-    createUserWithEmailAndPassword,
-    getAuth,
-    onAuthStateChanged,
-    signInWithEmailAndPassword,
-    signOut
+  createUserWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  updateProfile
 } from "firebase/auth";
 import React, { createContext, useEffect, useState } from "react";
 import app from "../Firebase/Firebase.init";
@@ -411,6 +416,11 @@ const UserContext = ({ children }) => {
   const [user, setUser] = useState({});
   // loading state যাতে user page reload এর পরে same page এ থাকে।
   const [loading, setLoading] = useState(true);
+	
+//google login
+  const googleLogin = (provider) => {
+    return signInWithPopup(auth, provider);
+  };
   //create user for firebase
   const createUser = (email, password) => {
     setLoading(true)
@@ -421,6 +431,14 @@ const UserContext = ({ children }) => {
   const signIn = (email, password) => {
     setLoading(true)
     return signInWithEmailAndPassword(auth, email, password);
+  };
+// verifyEmail
+  const verifyEmail = () => {
+    return sendEmailVerification(auth.currentUser)
+  };
+//set profile and name
+  const updateUserProfile = (profile) => {
+    return updateProfile(auth.currentUser, profile);
   };
 
   //sign out user from ui
@@ -441,7 +459,16 @@ const UserContext = ({ children }) => {
   }, []);
 
   //send Data any where
-  const authInfo = { user, loading, createUser, signIn, logOut };
+  const authInfo = {
+    user,
+    loading,
+    updateUserProfile,
+    googleLogin,
+    createUser,
+    logOut,
+    verifyEmail,
+    signIn,
+  };
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
@@ -449,14 +476,17 @@ const UserContext = ({ children }) => {
 
 export default UserContext;
 
-//step 2 (use AuthContext)
+//step 2 (use AuthContext in Login.js )
+// Login.js (component)
 import React, { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/UserContext";
 	
 const Login = () => {
 //receive data from UserContext
-  const { signIn } = useContext(AuthContext);
+  const { signIn, googleLogin } = useContext(AuthContext);
+//google provider
+  const googleProvider = new GoogleAuthProvider();
   //navigate after login
   const navigate = useNavigate();
   // call location
@@ -483,6 +513,16 @@ const Login = () => {
       .catch((error) => console.error(error));
   };
 	
+//google sign in
+  const handleGoogleSignIn = () => {
+    googleLogin(googleProvider)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+      })
+      .catch((error) => console.error(error));
+  };
+	
   return (
 	
 	<form onSubmit={handleSubmit}>
@@ -502,11 +542,142 @@ const Login = () => {
 	/>
 	<button> Login </button>
       </form>
+	//google sign in
+	<Button
+          onClick={handleGoogleSignIn}
+          className="mb-2"
+          variant="outline-primary"
+        >
+          Login with google <FcGoogle />
+        </Button>
 	
   );
 };
 
 export default Login;
+	
+	
+	
+//step 3 (use AuthContext in register.js )
+// register.js (component)
+import React, { useContext, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthProvider";
+const Register = () => {
+  const [error, setError] = useState("");
+  const [accepted, setAccepted] = useState(false);
+  const { createUser, updateUserProfile, verifyEmail } = useContext(AuthContext);
+const navigate = useNavigate();
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const form = event.target;
+    const name = form.name.value;
+    const photoURL = form.photoURL.value;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    createUser(email, password)
+      .then((result) => {
+        const user = result.user;
+        setError("");
+        form.reset();
+        navigate('/')
+	//update profile
+        handleUpdateUserProfile(name, photoURL)
+	// verification email
+	handleEmailVerification()
+      })
+      .then((error) => {
+        console.error(error);
+        setError(error.message);
+      });
+  };
+// update profile img
+  const handleUpdateUserProfile = (name, photoURL) => {
+    const profile = {
+      displayName:name,
+      photoURL:photoURL
+    };
+    updateUserProfile(profile)
+    .then(() => {})
+    .then(error=> console.error(error))
+  };
+	
+// handle email veriyfication
+const handleEmailVerification = () => {
+  verifyEmail()
+  .then(() => {})
+  .catch(error=> console.error(error))
+};
+
+  const handleAccepted = (event) => {
+    setAccepted(event.target.checked);
+    // const  = ;
+  };
+
+  return (
+    <div>
+      <Form onSubmit={handleSubmit} className="w-75 mx-auto">
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Your Name</Form.Label>
+          <Form.Control type="text" name="name" placeholder="Your Name" />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Photo URL</Form.Label>
+          <Form.Control name="photoURL" type="text" placeholder="Photo URL" />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control
+            name="email"
+            type="email"
+            placeholder="Enter email"
+            required
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            name="password"
+            type="password"
+            placeholder="Password"
+            required
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicCheckbox">
+          <Form.Check
+            onClick={handleAccepted}
+            type="checkbox"
+            label={
+              <>
+                Accept <Link to="/terms">Terms and conditions</Link>
+              </>
+            }
+          />
+        </Form.Group>
+
+        <Button variant="primary" type="submit" disabled={!accepted}>
+          Register
+        </Button>
+
+        <Form.Text className="text-muted text-danger">
+          We'll
+          {error}
+        </Form.Text>
+      </Form>
+    </div>
+  );
+};
+
+export default Register;
+
 	
 ```
 </details>
@@ -562,9 +733,28 @@ export default Login;
 
 ************Firebase Notes************
 
-2.
-	
-	
+1. disabled checked and  Submit button
+//step 1
+ const [accepted, setAccepted] = useState(false);
+//step 2
+ const handleAccepted = (event) => {
+    setAccepted(event.target.checked);
+    // const  = ;
+  };
+//step 3
+<Form.Check
+    onClick={handleAccepted}
+    type="checkbox"
+    label={
+      <>
+	Accept <Link to="/terms">Terms and conditions</Link>
+      </>
+    }
+  />
+// step 4
+ <Button variant="primary" type="submit" disabled={!accepted}>
+  Register
+</Button>
 	
 	
 
