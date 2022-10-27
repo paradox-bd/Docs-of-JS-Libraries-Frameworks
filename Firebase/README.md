@@ -124,6 +124,17 @@ storageBucket=authentech-b67c9.appspot.com
 messagingSenderId=231829553918
 appId=1:231829553918:web:9716fcdfcf528781d01baf
 
+
+//Firebase.init.js
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_apiKey,
+  authDomain: process.env.REACT_APP_authDomain,
+  projectId: process.env.REACT_APP_projectId,
+  storageBucket: process.env.REACT_APP_storageBucket,
+  messagingSenderId: process.env.REACT_APP_messagingSenderId,
+  appId: process.env.REACT_APP_appId,
+};
+
 ```
 </details>
 
@@ -1103,6 +1114,51 @@ export default Register;
 // for every deploy
 10. npm run build
 11. firebase deploy
+
+
+<!--- Hosting Problem -->
+
+//Problem: 
+//if you have this problem then flow
+Welcome
+Firebase Hosting Setup Complete
+You're seeing this because
+you've successfully setup Firebase Hosting. 
+Now it's time to go build something extraordinary!
+OPEN HOSTING DOCUMENTATION
+
+//solved that Problem
+
+ফায়ারবেইজের এই সমস্যটি আমাদের সবচেয়ে  বেশি মাথা খারাপ করে দেয় । 😠
+সমস্যার কারণঃ আমরা  যখন হোস্টিং এর কমান্ডগুলো  চালায় , ভুলে 
+What do you want to use as your public directory?  y      দিয়ে ফেলি ।
+সমাধানের উপায়ঃ
+
+Step 1: 
+প্রথমেই build folder এবং  .firebase , .firebaserc , firebase.json , package-lock.json , yarn.lock ( if exist ) ডিলিট করে দিন।
+
+Step 2: 
+firebase init এই কমান্ড টি দিন।  নিচের স্টেপ্সগুলো ঠিকমত দিন 👀
+	
+Are you ready to proceed? (Y/n) Yes
+>( ) Hosting: Configure files for Firebase Hosting and (optionally) set up GitHub Action deploys
+Use an existing project
+select your project
+ What do you want to use as your public directory?   build     
+ Configure as a single-page app (rewrite all urls to /index.html)?  Yes
+ Set up automatic builds and deploys with GitHub?   No
+ File build/index.html already exists. Overwrite?   Yes
+
+Step 3:
+ npm run build
+ firebase deploy
+ 
+Step 4: 
+৩ minute পর আপনার লাইভ লিঙ্ক chrome browser  গিয়ে আপনার লাইভ লিঙ্ক হিট করুন । 
+console tab ওপেন রেখে reload button এ মাউস  চেপে ধরে empy cache and hard reload করেন কয়েকবার।
+সার্ভার আপডেট হতে একটু সময় লাগে তাই ৩ মিনিট কমপক্ষে অপেক্ষা করবেন।
+
+
 
 
 ```
