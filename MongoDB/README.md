@@ -44,7 +44,7 @@ demo code
 	
 ```js
 
-/* 
+
 ১। mongodb atlas data host korte dai pore data niya kaj korte pari
 2.mongodb connect korar jonno (URI) thakbe 
 =>const uri = ;
@@ -114,7 +114,6 @@ const query = { };
 
 
 
-*/
 
 ```
 </details>
@@ -477,7 +476,49 @@ const query = { };
 	
 ```js
 
-demo code
+// POST
+
+//Step 1 : (send data client to server)
+ const handleAddServant = (event) => {
+    event.preventDefault();
+    console.log(servant);
+    
+//(send data client to server)
+    fetch('http://localhost:5000/servants', {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(servant)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.acknowledged){
+            alert('User added successfully');
+            event.target.reset();
+        }
+    })
+  };
+  
+  //Step 2 : (receive data in server)
+async function run() {
+  try {
+    const servantCollection = client
+      .db("servant-database")
+      .collection("servants");
+      
+//(receive data in server)
+      app.post('/servants', async (req, res) => {
+        const servant = req.body;
+        console.log(servant);
+        const result = await servantCollection.insertOne(servant)
+        res.send(result);
+    });
+  } finally {
+  }
+}
+run().catch(console.dir);
+  
 
 ```
 </details>

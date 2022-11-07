@@ -15,7 +15,7 @@
 - 
 - Every req in ExpressBoilerplate (Full Example)
 List of Express JS:
-- [IntialSetup](#IntialSetup)
+- [serverStepByStep](#serverStepByStep)
 - [ExpressBoilerplate](#ExpressBoilerplate)
 - [RequestAndResponse](#RequestAndResponse)
 - [Notes](#Notes)
@@ -38,46 +38,76 @@ demo code
 ```
 </details>
 
-### IntialSetup
+### serverStepByStep
 <details>
 <summary>
-  <h3>IntialSetup-(Click Me)</h3>
+  <h3>server Step By Step-(Click Me)</h3>
 </summary>
 <br >
 	
 ```js
 
 /* 
-// Server Step by Step
-1. create folder
-2. open folder in terminal
-3. then run (npm init -y)
-4. npm install express (node framework)
-5. npm install cors
-5.1 npm install dotenv --save
-6. npm install nodemon (all time server live থাকে )
-6.1 npm install jsonwebtoken
-7. (4, 5, 6 install same line (npm i express cors dotenv nodemon jsonwebtoken))
-8. create index.js (in your root folder যাতে server run করলে index.js দেখাতে পারে।)
-9. open package.js 
+=====Server step by step===
+1. create folder (demo-server)
+2. open cmd and type (npm init -y)
+3. open folder and  create index.js (in your root folder যাতে server run করলে index.js দেখাতে পারে।)
+4. install some package (npm i express cors nodemon dotenv jsonwebtoken mongodb)
+5. open package.js 
  added ( "start": "nodemon index.js" ) in your scripts
  //Example:
   "scripts": {
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-10. then (npm start) in your terminal
+6. then (npm start) in your terminal
+	
+// index.js
+const express = require("express");
+const cors = require("cors");
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const app = express();
+const Port = process.env.PORT || 5000;
+
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("Servant Network Server is Running");
+});
 
 
+app.listen(Port, () => {
+  console.log(`Servant Network Server running on port ${Port}`);
+});
 
+//then go to mongodb and (create user and password)
+// 
+// check mongodb connected
+const uri = `mongodb+srv://servantNetwork:jbTAlWrnJfp5NfFZ@cluster0.m1iwwru.mongodb.net/?retryWrites=true&w=majority`;
+console.log(uri);
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverApi: ServerApiVersion.v1,
+});
 
-Mern Stack in 4 lang
-1. Node.js
-2. mongodb
-3. Express.js
-4. React
+async function run() {
+  try {
+    const servantCollection = client
+      .db("servant-database")
+      .collection("servants");
 
-
+    const servants = {
+      name: "text servant",
+      email: "servant@gamil.com",
+    };
+    const result = await servantCollection.insertOne(servants);
+    console.log(result);
+  } finally {
+  }
+}
+run().catch(console.dir);
 
 ```
 </details>
