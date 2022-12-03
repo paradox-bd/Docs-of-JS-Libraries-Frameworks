@@ -11,6 +11,7 @@ List of React:
 - [InitialSetup](#InitialSetup)
 - [Firebasae.init.js](#FirebasaeInitJs)
 - [AuthProvider](#AuthProvider) (Focus)
+- [Form](#Form)
 - [GoogleSignIn](#GoogleSignIn)
 - [EmailPasswordAuth](#EmailPasswordAuth)
 - [ResetPassword](#ResetPassword)
@@ -33,7 +34,7 @@ List of React:
 	
 ```js
 
- AuthProvider
+ Form
 
 ```
 </details>
@@ -250,6 +251,35 @@ const AuthProvider = ({ children }) => {
 
 export default AuthProvider;
 
+
+```
+</details>
+
+
+### Form
+<details>
+<summary>
+  <h3>Form-(Click Me)</h3>
+</summary>
+<br >
+	
+```js
+
+ //img input
+ <input type="file"  id="image"  name="image" accept="image/*" required />
+ //catch img input
+ const image = form.image.files[0];
+// post img imgbb
+const formData = new FormData();
+formData.append("image", image);
+const url = `https://api.imgbb.com/1/upload?key=460b8c52cb6d0d028c77ba6a46df812e`;
+fetch(url, {
+method: "POST",
+body: formData,
+})
+.then((res) => res.json())
+.then((data) => console.log(data));
+ 
 
 ```
 </details>
