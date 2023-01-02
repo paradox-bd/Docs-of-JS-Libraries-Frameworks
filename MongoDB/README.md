@@ -78,17 +78,157 @@ const { user } = useContext(AuthContext);
 	
 ========================================	
 
-========   Method () =======
-	
+========   Method ( MongoDB ObjectId  বাদে অন্য id ধরে data load ) =======
 <---Client Code--->
+ const { serviceName, phone, price, service, _id, customer, status } = order;
+  const [orderService, setOrderService] = useState([]);
+  useEffect(() => {
+    fetch(`http://localhost:5000/services/${service}`)
+      .then((res) => res.json())
+      .then((data) => setOrderService(data));
+  }, [service]);
 
 <---Database Code--->
 
+
+========================================
+	
+<---   Method () --->
+<---Client Code--->
+	
+ const handleDelete = (id) => {
+    const proceed = window.confirm(
+      "Are you sure you want to cancel this order"
+    );
+    if (proceed) {
+      fetch(`http://localhost:5000/orders/${id}`, {
+        method: "DELETE",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if(data.deletedCount > 0){
+            alert('deleted successfully')
+            const remaining = orders.filter(odr => odr._id !== id);
+            setOrders(remaining)
+          }
+        });
+    }
+  };
+	
+//
+ <button onClick={() => handleDelete(_id)} className="btn btn-circle">
+
+<---Database Code--->
+ //delete method
+    app.delete("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(query);
+      res.send(result);
+    });
+
+========================================
+	
+<---  Update Method ( add admin, pending/ approved, req/submited work in this way ) --->
+<---Client Code--->
+ <button
+  onClick={() => handleStatusUpdate(_id)}
+  className="btn btn-ghost btn-xs"
+>
+  {status ? status : "pending"}
+</button>
+//
+
+  const handleStatusUpdate = (id) => {
+    fetch(`http://localhost:5000/orders/${id}`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ status: "Approved" }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.modifiedCount > 0) {
+          console.log(data);
+          const remaining = orders.filter((odr) => odr._id !== id);
+          const approving = orders.find((odr) => odr._id === id);
+          approving.status = "Approved";
+          const newOrders = [approving, ...remaining];
+          setOrders(newOrders);
+        }
+      });
+  };
+	
+
+
+<---Database Code--->
+app.patch("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const status = req.body.status;
+      console.log(id, status);
+      const query = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          status: status,
+        },
+      };
+      const result = await orderCollection.updateOne(query, updatedDoc);
+      res.send(result);
+    });
+	
+	
+========================================	
+	
+<---   Method () --->
+<---Client Code--->
+
+<---Database Code--->
+	
+========================================
+	
 <---   Method () --->
 <---Client Code--->
 
 <---Database Code--->
 
+========================================
+	
+<---   Method () --->
+<---Client Code--->
+
+<---Database Code--->
+========================================
+	
+<---   Method () --->
+<---Client Code--->
+
+<---Database Code--->
+
+========================================
+	
+<---   Method () --->
+<---Client Code--->
+
+<---Database Code--->
+	
+========================================	
+	
+<---   Method () --->
+<---Client Code--->
+
+<---Database Code--->
+	
+========================================
+	
+<---   Method () --->
+<---Client Code--->
+
+<---Database Code--->
+
+========================================
 
 ```
 </details>
