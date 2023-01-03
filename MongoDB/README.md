@@ -93,7 +93,7 @@ const { user } = useContext(AuthContext);
 
 ========================================
 	
-<---   Method () --->
+<--- Delete  Method (_id waise) --->
 <---Client Code--->
 	
  const handleDelete = (id) => {
@@ -162,8 +162,6 @@ const { user } = useContext(AuthContext);
       });
   };
 	
-
-
 <---Database Code--->
 app.patch("/orders/:id", async (req, res) => {
       const id = req.params.id;
@@ -182,17 +180,80 @@ app.patch("/orders/:id", async (req, res) => {
 	
 ========================================	
 	
-<---   Method () --->
-<---Client Code--->
+<---  Get Method (double query করে data load MOdule : 68) --->
 
+<---Client Code--->
+  const [products, setProducts] = useState([]);
+  const [size, setSize] = useState(10);
+
+  useEffect(() => {
+    const url = `http://localhost:5000/products?page=${page}&size=${size}`;
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data.products);
+        setCount(data.count);
+      });
+  }, [page, size]);
+  
 <---Database Code--->
+app.get("/products", async (req, res) => {
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
+      console.log(page, size);
+      const query = {};
+      const cursor = productCollection.find(query);
+      const products = await cursor
+        .skip(page * size)
+        .limit(size)
+        .toArray();
+      //pagination er jonno count send kora client site
+      const count = await productCollection.estimatedDocumentCount();
+      res.send({ products, count });
+    });
 	
 ========================================
 	
-<---   Method () --->
+<---  post  Method ( map body to db id) --->
 <---Client Code--->
+  //get data from localStorage
+  useEffect(() => {
+    const storedCart = getStoredCart();
+    const savedCart = [];
+    const ids = Object.keys(storedCart);
+    console.log(storedCart, ids);
+
+    fetch("http://localhost:5000/productsByIds", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(ids),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        for (const id in storedCart) {
+          const addedProduct = data.find((product) => product._id === id);
+          if (addedProduct) {
+            const quantity = storedCart[id];
+            addedProduct.quantity = quantity;
+            savedCart.push(addedProduct);
+          }
+        }
+        setCart(savedCart);
+      });
+  }, [products]);
 
 <---Database Code--->
+app.post("/productsByIds", async (req, res) => {
+      const ids = req.body;
+      const objectIds = ids.map(id => ObjectId(id));
+      const query = {_id: {$in: objectIds}};
+      console.log(ids, query) ;
+      const cursor = productCollection.find(query);
+      const products = await cursor.toArray();
+      res.send(products);
+    });
 
 ========================================
 	
@@ -227,6 +288,7 @@ app.patch("/orders/:id", async (req, res) => {
 <---Client Code--->
 
 <---Database Code--->
+	
 
 ========================================
 
@@ -1017,8 +1079,8 @@ viii. Comments
       <!-- row 1 -->
       <tr>
         <th>1</th>
-        <td> </td>
-        <td> </td>
+        <td>Limit Data </td>
+        <td> const products = await cursor.limit(10).toArray(); </td>
       </tr>
       <!-- row 2 -->
       <tr>
