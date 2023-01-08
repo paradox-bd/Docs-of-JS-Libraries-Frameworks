@@ -284,10 +284,55 @@ app.post("/productsByIds", async (req, res) => {
 	
 ========================================
 	
-<---   Method () --->
+<---  Get  Method (sort by price low to high ) --->
+// module 70_5-3
+	
 <---Client Code--->
+  const [services, setServices] = useState([]);
+  const [isAsc, setIsAsc] = useState(true);
+  useEffect(() => {
+    fetch(`http://localhost:5000/services?order=${isAsc ? "asc" : "desc"}`)
+      .then((res) => res.json())
+      .then((data) => setServices(data));
+  }, [isAsc]);
+  
+	<button
+	onClick={() => setIsAsc(!isAsc)}
+	>
+	{isAsc ? "desc" : "ase"}
+	</button>
 
 <---Database Code--->
+// Example : 1
+ //all service fetch sort by price low to high , 
+    app.get("/services", async (req, res) => {
+      const query = {};
+      const order = (req.query.order === "asc" ? 1 : -1);
+      console.log(order)
+      const result = await serviceCollection
+        .find(query)
+        .sort({ price: order })
+        .toArray();
+      res.send(result);
+    });
+	
+// Example : 2
+//all service fetch sort by price low to high ,
+    app.get("/services", async (req, res) => {
+      // down to 100 price services fetch
+      // const query = { price: { $lt: 100 } };
+      // up to 100 price services fetch
+      // const query = { price: { $gt: 100 } };
+      // up to 20 and down to 300 price services fetch
+      const query = { price: { $gt: 20, $lt: 180 } };
+      const order = req.query.order === "asc" ? 1 : -1;
+      console.log(order);
+      const result = await serviceCollection
+        .find(query)
+        .sort({ price: order })
+        .toArray();
+      res.send(result);
+    });
 	
 
 ========================================
