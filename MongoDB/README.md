@@ -44,6 +44,14 @@ Demo Content
 <br >
 	
 ```js
+	
+//api naming convention
+1. app.get('bookings')
+2. app.get('bookings/:id')
+3. app.post('/bookings')
+4. app.patch('/bookings/:id')
+4. app.delete('/bookings/:id')
+*/
 
 All Opareation Client > Database > Mongodb
 ========================================
@@ -277,10 +285,36 @@ app.post("/productsByIds", async (req, res) => {
 	
 ========================================	
 	
-<---   Method () --->
+<--- post  Method ( MongoDB-তে duplicate data ইনসার্ট প্রিভেন্ট করতে কে কোন মেথড ইউজ করেন?) --->
 <---Client Code--->
 
 <---Database Code--->
+
+// MongoDB-তে duplicate data ইনসার্ট প্রিভেন্ট করতে কে কোন মেথড ইউজ করেন?
+// Data insert korar aage data ache kina sheta condition diye check kore erpor insert kori. For example amar ekta api share korlam
+app.post("/users", async (req, res) => {
+  const { username, email, institute, address, photo } = req.body;
+  const user = await usersCollection.findOne({
+    $or: [{ email }, { username }],
+  });
+  if (user) {
+    res.status(400).send({
+      message: "Username or email already exists",
+    });
+  } else {
+    const newUser = {
+      username,
+      email,
+      institute,
+      address,
+      photo,
+    };
+    await usersCollection.insertOne(newUser);
+    res.status(200).send({
+      message: "User created successfully",
+    });
+  }
+});
 	
 ========================================
 	
@@ -336,6 +370,74 @@ app.post("/productsByIds", async (req, res) => {
 	
 
 ========================================
+	
+<---  Get Method (search filed to find produt ) --->
+<---Client Code--->
+  const searchRef = useRef();
+  const [isAsc, setIsAsc] = useState(true);
+  const [search, setSearch] = useState("");
+  useEffect(() => {
+    fetch(
+      `http://localhost:5000/services?search=${search}&order=${
+        isAsc ? "asc" : "desc"
+      }`
+    )
+      .then((res) => res.json())
+      .then((data) => setServices(data));
+  }, [isAsc, search]);
+
+  const handleSearch = () => {
+    setSearch(searchRef.current.value);
+  };
+  console.log(search);
+  // search 
+   <div className="search-from flex items-center justify-center gap-4 mx-auto pb-4">
+          <input
+            ref={searchRef}
+            type="text"
+            placeholder="Search Service"
+            className="input input-bordered input-primary w-full max-w-xs"
+          />
+          <button onClick={handleSearch} className="btn btn-primary">
+            Search
+          </button>
+        </div>
+	
+	// ase / dese
+	
+   <button
+          onClick={() => setIsAsc(!isAsc)}
+          className="border border-[#FF3811] btn-sm ml-7 rounded-[5px] text-[#FF3811] font-semibold hover:bg-[#FF3811] hover:text-white hover:duration-1650"
+        >
+          {isAsc ? "desc" : "ase"}
+        </button>
+	
+
+<---Database Code--->
+  //services api
+    //all service fetch sort by price low to high ,
+    app.get("/services", async (req, res) => {
+      const search = req.query.search;
+      console.log(search);
+      let query = {};
+      if (search.length) {
+        query = {
+          $text: {
+            $search: search,
+          },
+        };
+      }
+      // const query = { price: { $gt: 10, $lt: 380 } };
+      const order = req.query.order === "asc" ? 1 : -1;
+      const result = await serviceCollection
+        .find(query)
+        .sort({ price: order })
+        .toArray();
+      res.send(result);
+    });
+	
+========================================	
+
 
 ```
 </details>
